@@ -1,423 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced To-Do List</title>
+    <title>Task Manager with Confetti</title>
     <style>
-        /* Global Styles */
-        body {
-            font-family: 'Roboto', sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f7fb;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            flex-direction: column;
-            color: #333;
+            padding: 20px;
+            position: relative;
             overflow: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .task-manager-wrapper {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 25px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease;
             position: relative;
         }
 
-        /* Dark Mode Styles */
-        body.dark-mode {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-
-        .todo-container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            width: 100%;
-            max-width: 480px;
-            transition: transform 0.3s ease;
-        }
-
-        .todo-container.dark-mode {
-            background-color: #333;
-        }
-
         h1 {
-            font-size: 2rem;
-            color: #4CAF50;
+            font-size: 28px;
+            color: #333;
             margin-bottom: 20px;
-            text-align: center;
-            font-weight: bold;
+            font-weight: 600;
         }
 
-        /* Input and Button Styling */
-        input,
-        button {
-            width: 100%;
-            padding: 10px 14px;
-            margin: 8px 0;
-            font-size: 14px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            outline: none;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        input {
-            background-color: #fafafa;
-            border-color: #ddd;
-        }
-
-        input:focus {
-            border-color: #4CAF50;
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
-            font-size: 14px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        button:hover {
-            background-color: #45a049;
-            transform: scale(1.1);
-        }
-
-        button:active {
-            background-color: #388e3c;
-            transform: scale(0.98);
-        }
-
-        /* Task List Styles */
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-
-        li {
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
+        .input-wrapper {
             display: flex;
             justify-content: space-between;
+            width: 100%;
+            gap: 10px;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
         }
 
-        li.completed {
-            background-color: #d4edda;
-            text-decoration: line-through;
-            opacity: 0.6;
+        .new-task-input,
+        .task-category {
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .new-task-input:focus,
+        .task-category:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .new-task-input {
+            flex-grow: 1;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .task-category {
+            width: 35%;
+            max-width: 140px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .add-task-button {
+            padding: 12px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 6px;
+            width: 40%;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .add-task-button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        .add-task-button:active {
+            transform: scale(1);
+        }
+
+        .tasks-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
             transition: opacity 0.5s ease;
         }
 
-        li:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            margin: 8px 0;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            color: #333;
+            opacity: 0;
+            animation: fadeIn 0.6s forwards, slideIn 0.6s ease-out forwards;
+            transform: translateY(20px);
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            width: 100%;
         }
 
-        .remove-btn {
+        .task-item.high-priority {
+            border-left: 6px solid red;
+        }
+
+        .task-item.medium-priority {
+            border-left: 6px solid orange;
+        }
+
+        .task-item.low-priority {
+            border-left: 6px solid green;
+        }
+
+        .task-item button {
+            border: none;
+            font-size: 14px;
+            background-color: #ff4d4d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .task-item button:hover {
+            background-color: #e03e3e;
+            transform: scale(1.05);
+        }
+
+        .task-item button:active {
+            transform: scale(1);
+        }
+
+        .task-item.completed {
+            text-decoration: line-through;
+            color: #888;
+            background-color: #d4edda;
+            transform: scale(1.02);
+        }
+
+        .clear-tasks-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
             background-color: #f44336;
             color: white;
+            font-size: 16px;
             border: none;
-            padding: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 50%;
-            transition: background-color 0.3s ease;
-            font-size: 12px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
         }
 
-        .remove-btn:hover {
+        .clear-tasks-button:hover {
             background-color: #d32f2f;
+            transform: scale(1.04);
         }
 
-        .remove-btn:active {
-            background-color: #c62828;
+        .clear-tasks-button:active {
+            transform: scale(1);
         }
 
-        /* Toast Notification */
-        .toast {
+        /* Toast Styles */
+        .toast-container {
             position: fixed;
-            bottom: -60px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-            visibility: hidden;
-            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
         }
 
-        .toast.show {
-            opacity: 1;
-            bottom: 20px;
-            visibility: visible;
+        .toast {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            font-size: 14px;
+            max-width: 300px;
+            width: 100%;
         }
 
         .toast.success {
-            background-color: #4CAF50;
+            background-color: #28a745;
         }
 
         .toast.error {
-            background-color: #f44336;
+            background-color: #ff4d4d;
         }
 
-        .toast.info {
-            background-color: #2196F3;
+        .toast .icon {
+            margin-right: 10px;
         }
 
-        /* Floating Add Button */
-        .fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease, transform 0.2s;
+        .toast .icon.success {
+            background: url('https://img.icons8.com/ios/50/ffffff/checked.png') no-repeat center center;
+            width: 20px;
+            height: 20px;
         }
 
-        .fab:hover {
-            background-color: #45a049;
+        .toast .icon.error {
+            background: url('https://img.icons8.com/ios/50/ffffff/delete-forever.png') no-repeat center center;
+            width: 20px;
+            height: 20px;
         }
 
-        .fab:active {
-            transform: scale(0.95);
-        }
-
-        /* Scroll to Top Button */
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            font-size: 18px;
-            display: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .scroll-top-btn:hover {
-            background-color: #45a049;
-        }
-
-        .scroll-top-btn:active {
-            background-color: #388e3c;
-        }
-
-        /* Confetti Animation */
-        @keyframes confetti {
-            0% {
-                top: -50px;
-                opacity: 1;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-            100% {
-                top: 100vh;
+        @keyframes slideIn {
+            0% {
+                transform: translateY(50px);
                 opacity: 0;
             }
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f39c12;
-            animation: confetti 2s infinite ease-in-out;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .todo-container {
-                padding: 15px;
+            100% {
+                transform: translateY(0);
+                opacity: 1;
             }
+        }
 
-            input,
-            button {
-                font-size: 14px;
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .task-manager-wrapper {
+                padding: 15px;
+                max-width: 100%;
             }
 
             h1 {
-                font-size: 1.5rem;
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .new-task-input,
+            .task-category {
+                width: 100%;
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .add-task-button {
+                width: 100%;
+                font-size: 12px;
+                padding: 10px;
+            }
+
+            .task-item {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .task-item button {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .clear-tasks-button {
+                font-size: 14px;
+                padding: 12px;
             }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="clock" id="clock"></div>
+    <div class="task-manager-wrapper">
+        <h1>Task Manager</h1>
 
-    <!-- Todo List Container -->
-    <div class="todo-container">
-        <h1>My Advanced To-Do List</h1>
-        <input type="text" id="taskInput" placeholder="Enter a new task">
-        <button id="addTaskBtn">+</button>
-        <ul id="taskList"></ul>
-        <p class="task-count" id="taskCount">You have no tasks.</p>
-        <button class="clear-btn" id="clearAllBtn">C</button>
+        <div class="input-wrapper">
+            <input type="text" id="taskInput" class="new-task-input" placeholder="Add a new task..." aria-label="New task input">
+            <select id="taskCategory" class="task-category" aria-label="Select task priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+            <button class="add-task-button" onclick="createTask()">Add Task</button>
+        </div>
+
+        <ul id="taskList" class="tasks-list"></ul>
+
+        <button class="clear-tasks-button" onclick="clearTasks()">Clear All Tasks</button>
     </div>
 
-    <button class="fab" id="fabBtn">+</button>
-    <button id="scrollTopBtn" class="scroll-top-btn">↑</button>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
-    <div class="toast" id="toastMessage">Task added successfully!</div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 
     <script>
-        // Get references
-        const taskInput = document.getElementById('taskInput');
-        const addTaskBtn = document.getElementById('addTaskBtn');
-        const taskList = document.getElementById('taskList');
-        const taskCount = document.getElementById('taskCount');
-        const clearAllBtn = document.getElementById('clearAllBtn');
-        const toastMessage = document.getElementById('toastMessage');
-        const clock = document.getElementById('clock');
-        const fabBtn = document.getElementById('fabBtn');
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.classList.add('toast', type);
 
-        // Load tasks from localStorage
-        document.addEventListener('DOMContentLoaded', () => {
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.forEach((task, index) => {
-                createTaskElement(task, index);
-            });
-            updateTaskCount(tasks.length);
+            // Icon
+            const icon = document.createElement('div');
+            icon.classList.add('icon', type);
+            toast.appendChild(icon);
 
-            // Set Clock
-            setInterval(() => {
-                const now = new Date();
-                clock.textContent = now.toLocaleTimeString();
-            }, 1000);
-        });
+            // Text message
+            const text = document.createElement('span');
+            text.textContent = message;
+            toast.appendChild(text);
 
-        // Add new task
-        addTaskBtn.addEventListener('click', () => {
-            const taskText = taskInput.value.trim();
-            if (taskText === "") return;
+            toastContainer.appendChild(toast);
 
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            const taskIndex = tasks.length;
-            tasks.push(taskText);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-
-            createTaskElement(taskText, taskIndex);
-            taskInput.value = ""; // Clear input field
-
-            showToast("Task added!", 'success');
-            updateTaskCount(tasks.length);
-            createConfettiEffect(); // Show confetti on task add
-        });
-
-        // Floating button to add task
-        fabBtn.addEventListener('click', () => {
-            taskInput.focus();
-        });
-
-        // Scroll to Top functionality
-        window.onscroll = () => {
-            scrollTopBtn.classList.toggle('show', document.documentElement.scrollTop > 100);
-        };
-
-        scrollTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // Create task element
-        function createTaskElement(taskText, index) {
-            const li = document.createElement('li');
-            li.textContent = taskText;
-
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = "X";
-            removeBtn.classList.add('remove-btn');
-            removeBtn.addEventListener('click', () => {
-                removeTask(li, index);
-            });
-
-            li.appendChild(removeBtn);
-            taskList.appendChild(li);
-        }
-
-        // Remove task
-        function removeTask(taskElement, index) {
-            taskElement.remove();
-            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.splice(index, 1);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            showToast("Task removed!", 'error');
-            updateTaskCount(tasks.length);
-        }
-
-        // Update task count
-        function updateTaskCount(count) {
-            taskCount.textContent = count === 0 ? "You have no tasks." : `You have ${count} task${count > 1 ? 's' : ''}.`;
-        }
-
-        // Show toast message
-        function showToast(message, type) {
-            toastMessage.textContent = message;
-            toastMessage.classList.add('show', type);
+            // Show and remove toast after animation
             setTimeout(() => {
-                toastMessage.classList.remove('show');
-            }, 3000);
+                toast.style.animation = 'fadeInOut 3s forwards';
+            }, 100);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3500);  // Toast disappears after 3.5 seconds
         }
 
-        // Confetti effect on task add
-        function createConfettiEffect() {
-            for (let i = 0; i < 20; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = `${Math.random() * 100}vw`;
-                document.body.appendChild(confetti);
-                setTimeout(() => {
-                    confetti.remove();
-                }, 2000);
-            }
+        // Trigger Confetti
+        function triggerConfetti() {
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { x: 0.5, y: 0.5 },
+                colors: ['#ff4d4d', '#28a745', '#007bff', '#f39c12'],
+                shape: 'circle',
+                scalar: 1.2
+            });
         }
 
-        // Clear all tasks
-        clearAllBtn.addEventListener('click', () => {
-            if (confirm("Are you sure you want to clear all tasks?")) {
-                taskList.innerHTML = '';
-                localStorage.removeItem('tasks');
-                showToast("All tasks cleared!", 'info');
-                updateTaskCount(0);
-            }
-        });
+        // Create Task
+        function createTask() {
+            const taskInputField = document.getElementById('taskInput');
+            const taskCategory = document.getElementById('taskCategory').value;
+            const taskDescription = taskInputField.value.trim();
+
+            if (!taskDescription) return;
+
+            const taskElement = document.createElement('li');
+            taskElement.classList.add('task-item', `${taskCategory}-priority`);
+
+            // Task text container
+            const taskText = document.createElement('span');
+            taskText.textContent = taskDescription;
+            taskElement.appendChild(taskText);
+
+            taskElement.addEventListener('click', () => taskElement.classList.toggle('completed'));
+
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.style.display = 'flex';
+            buttonWrapper.style.gap = '10px';
+
+            const deleteTaskButton = document.createElement('button');
+            deleteTaskButton.textContent = 'Delete';
+            deleteTaskButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent task click event
+                taskElement.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => taskElement.remove(), 500);
+                showToast("Task deleted successfully!", 'error');
+                triggerConfetti();  // Trigger confetti on task delete
+            });
+
+            const editTaskButton = document.createElement('button');
+            editTaskButton.textContent = 'Edit';
+            editTaskButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent task click event
+                const newDescription = prompt("Edit task:", taskText.textContent);  // Edit only the text part
+                if (newDescription) {
+                    taskText.textContent = newDescription;  // Update only the text container
+                    showToast("Task edited successfully!", 'success');
+                }
+            });
+
+            buttonWrapper.appendChild(deleteTaskButton);
+            buttonWrapper.appendChild(editTaskButton);
+            taskElement.appendChild(buttonWrapper);
+            document.getElementById('taskList').appendChild(taskElement);
+
+            taskInputField.value = '';
+            taskInputField.focus();
+
+            showToast("Task added successfully!", 'success');
+            triggerConfetti();  // Trigger confetti on task creation
+        }
+
+        // Clear All Tasks
+        function clearTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            showToast("All tasks cleared!", 'error');
+        }
     </script>
-
 </body>
-
 </html>
