@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager with Confetti</title>
+    <title>Task Manager</title>
     <style>
         * {
             margin: 0;
@@ -12,238 +12,218 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             padding: 20px;
-            position: relative;
-            overflow: hidden;
         }
 
         .task-manager-wrapper {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 450px;
-            padding: 25px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            transition: transform 0.3s ease;
-            position: relative;
+            max-width: 500px;
+            padding: 30px;
         }
 
         h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.5em;
             font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .input-wrapper {
             display: flex;
-            justify-content: space-between;
-            width: 100%;
             gap: 10px;
-            align-items: center;
+            margin-bottom: 25px;
         }
 
         .new-task-input,
         .task-category {
-            padding: 12px;
-            font-size: 14px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            width: 100%;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .new-task-input {
+            flex: 1;
         }
 
         .new-task-input:focus,
         .task-category:focus {
-            border-color: #007bff;
             outline: none;
-        }
-
-        .new-task-input {
-            flex-grow: 1;
-            border-radius: 6px 0 0 6px;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
 
         .task-category {
-            width: 35%;
-            max-width: 140px;
-            border-radius: 0 6px 6px 0;
+            width: 120px;
+            cursor: pointer;
         }
 
         .add-task-button {
-            padding: 12px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            border: none;
-            background-color: #28a745;
+            background: #2ecc71;
             color: white;
-            border-radius: 6px;
-            width: 40%;
-            transition: background-color 0.3s ease, transform 0.1s ease;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .add-task-button:hover {
-            background-color: #218838;
-            transform: scale(1.05);
-        }
-
-        .add-task-button:active {
-            transform: scale(1);
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
         }
 
         .tasks-list {
-            list-style-type: none;
-            padding: 0;
+            list-style: none;
             margin-top: 20px;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
-            width: 100%;
-            transition: opacity 0.5s ease;
+            padding-right: 5px;
         }
 
         .task-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px;
-            margin: 8px 0;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-            color: #333;
-            opacity: 0;
-            animation: fadeIn 0.6s forwards, slideIn 0.6s ease-out forwards;
-            transform: translateY(20px);
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .task-item.high-priority {
-            border-left: 6px solid red;
-        }
-
-        .task-item.medium-priority {
-            border-left: 6px solid orange;
-        }
-
-        .task-item.low-priority {
-            border-left: 6px solid green;
-        }
-
-        .task-item button {
-            border: none;
-            font-size: 14px;
-            background-color: #ff4d4d;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-
-        .task-item button:hover {
-            background-color: #e03e3e;
-            transform: scale(1.05);
-        }
-
-        .task-item button:active {
-            transform: scale(1);
-        }
-
-        .task-item.completed {
-            text-decoration: line-through;
-            color: #888;
-            background-color: #d4edda;
-            transform: scale(1.02);
-        }
-
-        .clear-tasks-button {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background-color: #f44336;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-
-        .clear-tasks-button:hover {
-            background-color: #d32f2f;
-            transform: scale(1.04);
-        }
-
-        .clear-tasks-button:active {
-            transform: scale(1);
-        }
-
-        /* Toast Styles */
-        .toast-container {
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
             position: fixed;
-            bottom: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 9999;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            z-index: 1001;
+            animation: slideInModal 0.3s ease-out;
         }
 
-        .toast {
-            display: flex;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            opacity: 0;
-            animation: fadeInOut 3s forwards;
-            font-size: 14px;
-            max-width: 300px;
+        .modal h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .modal input,
+        .modal select {
             width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
         }
 
-        .toast.success {
-            background-color: #28a745;
+        .modal input:focus,
+        .modal select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            background-color: white;
         }
 
-        .toast.error {
-            background-color: #ff4d4d;
+        .modal label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
 
-        .toast .icon {
-            margin-right: 10px;
+        .modal .input-group {
+            margin-bottom: 20px;
         }
 
-        .toast .icon.success {
-            background: url('https://img.icons8.com/ios/50/ffffff/checked.png') no-repeat center center;
-            width: 20px;
-            height: 20px;
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
         }
 
-        .toast .icon.error {
-            background: url('https://img.icons8.com/ios/50/ffffff/delete-forever.png') no-repeat center center;
-            width: 20px;
-            height: 20px;
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button.cancel {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .modal-button.save {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInModal {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -40%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -254,86 +234,156 @@
             }
         }
 
-        @keyframes slideIn {
-            0% {
-                transform: translateY(50px);
+        .task-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-item.high-priority {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .task-item.medium-priority {
+            border-left: 4px solid #f1c40f;
+        }
+
+        .task-item.low-priority {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .task-item.completed {
+            background: #f8f9fa;
+            opacity: 0.8;
+        }
+
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: #95a5a6;
+        }
+
+        .task-item button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-left: 8px;
+        }
+
+        .task-item button:first-of-type {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .task-item button:last-of-type {
+            background: #3498db;
+            color: white;
+        }
+
+        .task-item button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .clear-tasks-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .clear-tasks-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: white;
+            color: #2c3e50;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
                 opacity: 0;
             }
-            100% {
-                transform: translateY(0);
+            to {
+                transform: translateX(0);
                 opacity: 1;
             }
         }
 
-        @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            10% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+        .toast.success {
+            border-left: 4px solid #2ecc71;
         }
 
-        @media (max-width: 400px) {
-            .task-manager-wrapper {
-                padding: 15px;
-                max-width: 100%;
-            }
+        .toast.error {
+            border-left: 4px solid #e74c3c;
+        }
 
-            h1 {
-                font-size: 24px;
-                margin-bottom: 15px;
-            }
-
+        @media (max-width: 480px) {
             .input-wrapper {
                 flex-direction: column;
-                align-items: stretch;
             }
 
-            .new-task-input,
             .task-category {
                 width: 100%;
-                font-size: 12px;
-                padding: 10px;
             }
 
             .add-task-button {
                 width: 100%;
-                font-size: 12px;
-                padding: 10px;
             }
 
             .task-item {
-                font-size: 14px;
-                padding: 10px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .task-item div {
+                width: 100%;
+                display: flex;
+                gap: 8px;
             }
 
             .task-item button {
-                font-size: 12px;
-                padding: 6px 10px;
+                flex: 1;
+                margin: 0;
             }
 
-            .clear-tasks-button {
-                font-size: 14px;
-                padding: 12px;
+            .modal {
+                width: 95%;
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-
     <div class="task-manager-wrapper">
         <h1>Task Manager</h1>
-
+        
         <div class="input-wrapper">
             <input type="text" id="taskInput" class="new-task-input" placeholder="Add a new task..." aria-label="New task input">
             <select id="taskCategory" class="task-category" aria-label="Select task priority">
@@ -345,117 +395,173 @@
         </div>
 
         <ul id="taskList" class="tasks-list"></ul>
-
         <button class="clear-tasks-button" onclick="clearTasks()">Clear All Tasks</button>
     </div>
 
-    <!-- Toast Container -->
+    <!-- Custom Modal for Editing -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal">
+            <h2>Edit Task</h2>
+            <div class="input-group">
+                <label for="editTaskInput">Task Description</label>
+                <input type="text" id="editTaskInput" placeholder="Edit your task">
+            </div>
+            <div class="input-group">
+                <label for="editTaskPriority">Priority Level</label>
+                <select id="editTaskPriority" class="task-category">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="modal-button save" onclick="saveEditedTask()">Save</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toastContainer" class="toast-container"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-
     <script>
-        // Toast Notification
+        let currentEditingTask = null;
+
+        function showEditModal(taskElement, currentText) {
+            const modal = document.getElementById('editModal');
+            const input = document.getElementById('editTaskInput');
+            const prioritySelect = document.getElementById('editTaskPriority');
+            
+            // Get current priority
+            const currentPriority = taskElement.className.split(' ')
+                .find(cls => cls.includes('-priority'))
+                ?.replace('-priority', '') || 'low';
+            
+            currentEditingTask = taskElement;
+            input.value = currentText;
+            prioritySelect.value = currentPriority;
+            
+            modal.style.display = 'block';
+            input.focus();
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeEditModal();
+                }
+            });
+
+            // Handle Enter key
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveEditedTask();
+                }
+            });
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'none';
+            currentEditingTask = null;
+        }
+
+        function saveEditedTask() {
+            const input = document.getElementById('editTaskInput');
+            const prioritySelect = document.getElementById('editTaskPriority');
+            const newText = input.value.trim();
+            const newPriority = prioritySelect.value;
+            
+            if (newText && currentEditingTask) {
+                const taskTextSpan = currentEditingTask.querySelector('span');
+                taskTextSpan.textContent = newText;
+                
+                // Update priority class
+                currentEditingTask.classList.remove('low-priority', 'medium-priority', 'high-priority');
+                currentEditingTask.classList.add(`${newPriority}-priority`);
+                
+                showToast("Task updated!", 'success');
+                closeEditModal();
+            }
+        }
+
         function showToast(message, type = 'success') {
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.classList.add('toast', type);
-
-            // Icon
-            const icon = document.createElement('div');
-            icon.classList.add('icon', type);
-            toast.appendChild(icon);
-
-            // Text message
-            const text = document.createElement('span');
-            text.textContent = message;
-            toast.appendChild(text);
-
+            toast.textContent = message;
             toastContainer.appendChild(toast);
 
-            // Show and remove toast after animation
             setTimeout(() => {
-                toast.style.animation = 'fadeInOut 3s forwards';
-            }, 100);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3500);  // Toast disappears after 3.5 seconds
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
-        // Trigger Confetti
-        function triggerConfetti() {
-            confetti({
-                particleCount: 150,
-                spread: 90,
-                origin: { x: 0.5, y: 0.5 },
-                colors: ['#ff4d4d', '#28a745', '#007bff', '#f39c12'],
-                shape: 'circle',
-                scalar: 1.2
-            });
-        }
-
-        // Create Task
         function createTask() {
-            const taskInputField = document.getElementById('taskInput');
+            const taskInput = document.getElementById('taskInput');
             const taskCategory = document.getElementById('taskCategory').value;
-            const taskDescription = taskInputField.value.trim();
+            const taskText = taskInput.value.trim();
 
-            if (!taskDescription) return;
+            if (!taskText) return;
 
             const taskElement = document.createElement('li');
             taskElement.classList.add('task-item', `${taskCategory}-priority`);
 
-            // Task text container
-            const taskText = document.createElement('span');
-            taskText.textContent = taskDescription;
-            taskElement.appendChild(taskText);
+            const taskTextSpan = document.createElement('span');
+            taskTextSpan.textContent = taskText;
+            taskElement.appendChild(taskTextSpan);
 
-            taskElement.addEventListener('click', () => taskElement.classList.toggle('completed'));
-
-            const buttonWrapper = document.createElement('div');
-            buttonWrapper.style.display = 'flex';
-            buttonWrapper.style.gap = '10px';
-
-            const deleteTaskButton = document.createElement('button');
-            deleteTaskButton.textContent = 'Delete';
-            deleteTaskButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent task click event
-                taskElement.style.animation = 'fadeOut 0.5s forwards';
-                setTimeout(() => taskElement.remove(), 500);
-                showToast("Task deleted successfully!", 'error');
-                triggerConfetti();  // Trigger confetti on task delete
+            taskElement.addEventListener('click', () => {
+                taskElement.classList.toggle('completed');
+                showToast(taskElement.classList.contains('completed') ? 
+                    "Task completed!" : "Task uncompleted", 'success');
             });
 
-            const editTaskButton = document.createElement('button');
-            editTaskButton.textContent = 'Edit';
-            editTaskButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent task click event
-                const newDescription = prompt("Edit task:", taskText.textContent);  // Edit only the text part
-                if (newDescription) {
-                    taskText.textContent = newDescription;  // Update only the text container
-                    showToast("Task edited successfully!", 'success');
-                }
-            });
+            const buttonContainer = document.createElement('div');
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                taskElement.style.opacity = '0';
+                taskElement.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    taskElement.remove();
+                    showToast("Task deleted!", 'error');
+                }, 300);
+            };
 
-            buttonWrapper.appendChild(deleteTaskButton);
-            buttonWrapper.appendChild(editTaskButton);
-            taskElement.appendChild(buttonWrapper);
+            const editBtn = document.createElement('button');
+            editBtn.textContent = 'Edit';
+            editBtn.onclick = (e) => {
+                e.stopPropagation();
+                showEditModal(taskElement, taskTextSpan.textContent);
+            };
+
+            buttonContainer.appendChild(deleteBtn);
+            buttonContainer.appendChild(editBtn);
+            taskElement.appendChild(buttonContainer);
+
             document.getElementById('taskList').appendChild(taskElement);
-
-            taskInputField.value = '';
-            taskInputField.focus();
+            taskInput.value = '';
+            taskInput.focus();
 
             showToast("Task added successfully!", 'success');
-            triggerConfetti();  // Trigger confetti on task creation
         }
 
-        // Clear All Tasks
         function clearTasks() {
             const taskList = document.getElementById('taskList');
+            if (taskList.children.length === 0) {
+                showToast("No tasks to clear!", 'error');
+                return;
+            }
             taskList.innerHTML = '';
             showToast("All tasks cleared!", 'error');
         }
+
+        document.getElementById('taskInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createTask();
+        });
     </script>
 </body>
 </html>
