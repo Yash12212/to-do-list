@@ -54,7 +54,7 @@ No complex setup needed!
     ```bash
     # If you use git
     git clone https://github.com/Yash12212/to-do-list.git
-    cd YOUR_REPOSITORY_NAME
+    cd to-do-list
 
     # Or simply download the index.html file
     ```
