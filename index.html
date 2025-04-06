@@ -3,565 +3,1640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>Enhanced Todo List with Effects</title>
+
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
     <style>
-        * {
+        /* --- Root Variables --- */
+        :root {
+            /* --- Layout & Typography (Shared) --- */
+            --border-radius-sm: 0.25rem;
+            --border-radius-md: 0.375rem;
+            --border-radius-lg: 0.5rem;
+            --font-base: 1rem;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --shadow-sm-props: 0 1px 2px 0; /* Keep props separate */
+            --shadow-md-props: 0 4px 6px -1px, 0 2px 4px -2px;
+            --shadow-lg-props: 0 10px 15px -3px, 0 4px 6px -4px;
+
+            /* --- Transitions (Shared) --- */
+            --transition-speed-fast: 150ms;
+            --transition-speed-medium: 250ms;
+            --transition-speed-slow: 400ms;
+            --transition-func: cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* --- Light Theme Colors --- */
+            --bg-primary-light: #f8fafc;
+            --bg-secondary-light: #ffffff;
+            --text-primary-light: #111827;
+            --text-secondary-light: #4b5563;
+            --text-placeholder-light: #9ca3af;
+            --accent-primary-light: #4f46e5;
+            --accent-primary-hover-light: #4338ca;
+            --accent-primary-focus-ring-light: rgba(99, 102, 241, 0.5);
+            --accent-secondary-light: #7c3aed;
+            --accent-secondary-hover-light: #6d28d9;
+            --accent-secondary-focus-ring-light: rgba(124, 58, 237, 0.5);
+            --danger-light: #dc2626;
+            --danger-hover-light: #b91c1c;
+            --danger-focus-ring-light: rgba(220, 38, 38, 0.5);
+            --border-light: #e5e7eb;
+            --shadow-color-light: rgba(100, 116, 139, 0.08);
+            --completed-text-light: #6b7280;
+            --empty-state-bg-light: #f9fafb;
+            --empty-state-border-light: #e5e7eb;
+            --checkbox-bg-light: #ffffff;
+            --checkbox-border-light: #d1d5db;
+            --checkbox-border-completed-light: #e5e7eb;
+            --checkbox-checked-bg-light: var(--accent-primary-light);
+            --checkbox-checked-border-light: var(--accent-primary-light);
+            --checkbox-checkmark-light: #ffffff;
+            --toggle-bg-light: #e5e7eb;
+            --toggle-fg-light: #4b5563;
+            --toggle-hover-bg-light: #d1d5db;
+            --input-shadow-light: rgba(0, 0, 0, 0.04);
+            --toast-success-bg-light: #d1fae5;
+            --toast-success-text-light: #065f46;
+            --toast-error-bg-light: #fee2e2;
+            --toast-error-text-light: #991b1b;
+            --toast-info-bg-light: #dbeafe;
+            --toast-info-text-light: #1e40af;
+            --toast-edit-bg-light: #fef3c7;
+            --toast-edit-text-light: #92400e;
+
+            /* --- Dark Theme Colors --- */
+            --bg-primary-dark: #0f172a;
+            --bg-secondary-dark: #1e293b;
+            --text-primary-dark: #f1f5f9;
+            --text-secondary-dark: #94a3b8;
+            --text-placeholder-dark: #64748b;
+            --accent-primary-dark: #818cf8;
+            --accent-primary-hover-dark: #a5b4fc;
+            --accent-primary-focus-ring-dark: rgba(129, 140, 248, 0.5);
+            --accent-secondary-dark: #a78bfa;
+            --accent-secondary-hover-dark: #c4b5fd;
+            --accent-secondary-focus-ring-dark: rgba(167, 139, 250, 0.5);
+            --danger-dark: #f87171;
+            --danger-hover-dark: #fb7185;
+            --danger-focus-ring-dark: rgba(248, 113, 113, 0.5);
+            --border-dark: #334155;
+            --shadow-color-dark: rgba(0, 0, 0, 0.25);
+            --completed-text-dark: #94a3b8;
+            --empty-state-bg-dark: #1e293b;
+            --empty-state-border-dark: #334155;
+            --checkbox-bg-dark: #334155;
+            --checkbox-border-dark: #475569;
+            --checkbox-border-completed-dark: #334155;
+            --checkbox-checked-bg-dark: var(--accent-primary-dark);
+            --checkbox-checked-border-dark: var(--accent-primary-dark);
+            --checkbox-checkmark-dark: #1e293b;
+            --toggle-bg-dark: #334155;
+            --toggle-fg-dark: #94a3b8;
+            --toggle-hover-bg-dark: #475569;
+            --input-shadow-dark: rgba(0, 0, 0, 0.15);
+            --toast-success-bg-dark: #059669;
+            --toast-success-text-dark: #d1fae5;
+            --toast-error-bg-dark: #be123c;
+            --toast-error-text-dark: #fee2e2;
+            --toast-info-bg-dark: #2563eb;
+            --toast-info-text-dark: #dbeafe;
+            --toast-edit-bg-dark: #d97706;
+            --toast-edit-text-dark: #fef3c7;
+
+            /* --- Apply Light Theme Variables By Default --- */
+            --bg-primary: var(--bg-primary-light);
+            --bg-secondary: var(--bg-secondary-light);
+            --text-primary: var(--text-primary-light);
+            --text-secondary: var(--text-secondary-light);
+            --text-placeholder: var(--text-placeholder-light);
+            --accent-primary: var(--accent-primary-light);
+            --accent-primary-hover: var(--accent-primary-hover-light);
+            --accent-primary-focus-ring: var(--accent-primary-focus-ring-light);
+            --accent-secondary: var(--accent-secondary-light);
+            --accent-secondary-hover: var(--accent-secondary-hover-light);
+            --accent-secondary-focus-ring: var(--accent-secondary-focus-ring-light);
+            --danger: var(--danger-light);
+            --danger-hover: var(--danger-hover-light);
+            --danger-focus-ring: var(--danger-focus-ring-light);
+            --border-color: var(--border-light);
+            --shadow-color: var(--shadow-color-light);
+            --completed-text: var(--completed-text-light);
+            --empty-state-bg: var(--empty-state-bg-light);
+            --empty-state-border: var(--empty-state-border-light);
+            --checkbox-bg: var(--checkbox-bg-light);
+            --checkbox-border: var(--checkbox-border-light);
+            --checkbox-border-completed: var(--checkbox-border-completed-light);
+            --checkbox-checked-bg: var(--checkbox-checked-bg-light);
+            --checkbox-checked-border: var(--checkbox-checked-border-light);
+            --checkbox-checkmark: var(--checkbox-checkmark-light);
+            --toggle-bg: var(--toggle-bg-light);
+            --toggle-fg: var(--toggle-fg-light);
+            --toggle-hover-bg: var(--toggle-hover-bg-light);
+            --input-shadow-color: var(--input-shadow-light);
+            --toast-success-bg: var(--toast-success-bg-light);
+            --toast-success-text: var(--toast-success-text-light);
+            --toast-error-bg: var(--toast-error-bg-light);
+            --toast-error-text: var(--toast-error-text-light);
+            --toast-info-bg: var(--toast-info-bg-light);
+            --toast-info-text: var(--toast-info-text-light);
+            --toast-edit-bg: var(--toast-edit-bg-light);
+            --toast-edit-text: var(--toast-edit-text-light);
+
+            /* Shadows using applied theme color */
+            --shadow-sm: var(--shadow-sm-props) var(--shadow-color);
+            --shadow-md: var(--shadow-md-props) var(--shadow-color);
+            --shadow-lg: var(--shadow-lg-props) var(--shadow-color);
+        }
+
+        /* --- Apply Dark Theme Variables --- */
+        html.dark-theme:root {
+            --bg-primary: var(--bg-primary-dark);
+            --bg-secondary: var(--bg-secondary-dark);
+            --text-primary: var(--text-primary-dark);
+            --text-secondary: var(--text-secondary-dark);
+            --text-placeholder: var(--text-placeholder-dark);
+            --accent-primary: var(--accent-primary-dark);
+            --accent-primary-hover: var(--accent-primary-hover-dark);
+            --accent-primary-focus-ring: var(--accent-primary-focus-ring-dark);
+            --accent-secondary: var(--accent-secondary-dark);
+            --accent-secondary-hover: var(--accent-secondary-hover-dark);
+            --accent-secondary-focus-ring: var(--accent-secondary-focus-ring-dark);
+            --danger: var(--danger-dark);
+            --danger-hover: var(--danger-hover-dark);
+            --danger-focus-ring: var(--danger-focus-ring-dark);
+            --border-color: var(--border-dark);
+            --shadow-color: var(--shadow-color-dark);
+            --completed-text: var(--completed-text-dark);
+            --empty-state-bg: var(--empty-state-bg-dark);
+            --empty-state-border: var(--empty-state-border-dark);
+            --checkbox-bg: var(--checkbox-bg-dark);
+            --checkbox-border: var(--checkbox-border-dark);
+            --checkbox-border-completed: var(--checkbox-border-completed-dark);
+            --checkbox-checked-bg: var(--checkbox-checked-bg-dark);
+            --checkbox-checked-border: var(--checkbox-checked-border-dark);
+            --checkbox-checkmark: var(--checkbox-checkmark-dark);
+            --toggle-bg: var(--toggle-bg-dark);
+            --toggle-fg: var(--toggle-fg-dark);
+            --toggle-hover-bg: var(--toggle-hover-bg-dark);
+            --input-shadow-color: var(--input-shadow-dark);
+            --toast-success-bg: var(--toast-success-bg-dark);
+            --toast-success-text: var(--toast-success-text-dark);
+            --toast-error-bg: var(--toast-error-bg-dark);
+            --toast-error-text: var(--toast-error-text-dark);
+            --toast-info-bg: var(--toast-info-bg-dark);
+            --toast-info-text: var(--toast-info-text-dark);
+            --toast-edit-bg: var(--toast-edit-bg-dark);
+            --toast-edit-text: var(--toast-edit-text-dark);
+        }
+
+        /* --- Base Styles --- */
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            border-width: 0; /* Reset border width */
+            border-style: solid;
+            border-color: var(--border-color); /* Use theme variable */
+        }
+
+        html {
+            font-size: var(--font-base);
+            scroll-behavior: smooth;
+            color-scheme: light dark; /* Signal theme support to browser */
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #3498db, #2ecc71);
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            line-height: 1.6;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: var(--spacing-lg);
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            align-items: flex-start; /* Align to top for long lists */
+            min-height: 100vh;
+            transition: background-color var(--transition-speed-medium) var(--transition-func),
+                        color var(--transition-speed-medium) var(--transition-func);
         }
 
-        .task-manager-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        ::placeholder {
+            color: var(--text-placeholder);
+            opacity: 1;
+        }
+
+        *:focus { outline: none; } /* Remove default outline */
+
+        :focus-visible { /* Use focus-visible for keyboard users */
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--accent-primary);
+        }
+
+        .sr-only { /* Screen Reader Only */
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* --- Layout --- */
+        .container {
+            background: var(--bg-secondary);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            border-width: 1px;
+            box-shadow: var(--shadow-lg);
             width: 100%;
-            max-width: 500px;
-            padding: 30px;
-        }
-
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 2.5em;
-            font-weight: 600;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .input-wrapper {
+            max-width: 650px;
+            margin-top: var(--spacing-lg);
             display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
+            flex-direction: column;
+            transition: background-color var(--transition-speed-medium) var(--transition-func),
+                        border-color var(--transition-speed-medium) var(--transition-func);
         }
 
-        .new-task-input,
-        .task-category {
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+        /* --- Typography --- */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
-        .new-task-input {
-            flex: 1;
+        /* --- Form Elements --- */
+        .add-task-form {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
         }
 
-        .new-task-input:focus,
-        .task-category:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        input[type="text"] {
+            padding: 0.65rem var(--spacing-md);
+            flex-grow: 1;
+            border-radius: var(--border-radius-md);
+            border-width: 1px;
+            background-color: var(--bg-primary); /* Slightly different bg for contrast */
+            color: var(--text-primary);
+            box-shadow: inset 0 1px 2px var(--input-shadow-color);
+            min-width: 100px; /* Prevent shrinking too much */
+            font-size: inherit;
+            transition: background-color var(--transition-speed-fast) var(--transition-func),
+                        border-color var(--transition-speed-fast) var(--transition-func),
+                        color var(--transition-speed-fast) var(--transition-func),
+                        box-shadow var(--transition-speed-fast) var(--transition-func);
         }
 
-        .task-category {
-            width: 120px;
-            cursor: pointer;
+        input[type="text"]:focus-visible {
+            border-color: var(--accent-primary);
+            box-shadow: inset 0 1px 2px var(--input-shadow-color);
+            outline: none; /* Replaced by focus-visible ring */
         }
 
-        .add-task-button {
-            background: #2ecc71;
-            color: white;
+        .edit-input {
+            flex-grow: 1;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: var(--spacing-xs) 0;
+            margin: 0;
+            font-size: inherit;
+            font-family: inherit;
+            line-height: inherit;
+            outline: none;
+            background-color: transparent;
+            border-bottom: 2px solid var(--accent-primary);
+            width: 100%;
+            color: var(--text-primary);
+        }
+
+        .edit-input.sr-only { display: none; }
+
+        /* --- Buttons --- */
+        button {
             cursor: pointer;
-            font-size: 1rem;
+            font-size: inherit;
             font-weight: 600;
-            transition: all 0.3s ease;
+            padding: 0.65rem var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            border-width: 1px;
+            text-align: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+            outline-offset: 2px; /* For focus-visible ring */
+            position: relative; /* For potential future pseudo-elements */
+            background-color: var(--bg-secondary); /* Default background */
+            color: var(--text-primary); /* Default text */
+            transition: background-color var(--transition-speed-fast) var(--transition-func),
+                        border-color var(--transition-speed-fast) var(--transition-func),
+                        color var(--transition-speed-fast) var(--transition-func),
+                        box-shadow var(--transition-speed-fast) var(--transition-func),
+                        transform var(--transition-speed-fast) var(--transition-func),
+                        opacity var(--transition-speed-fast) var(--transition-func);
         }
 
-        .add-task-button:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
-        .tasks-list {
-            list-style: none;
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 5px;
+        button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
         }
 
-        .task-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Specific Button Types */
+        .add-btn {
+            background-color: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        .add-btn:hover:not(:disabled) {
+            background-color: var(--accent-primary-hover);
+            border-color: var(--accent-primary-hover);
+        }
+
+        .remove-btn {
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid transparent; /* Reserve space */
+            box-shadow: none;
+            flex-shrink: 0;
+            opacity: 0; /* Hidden by default */
+            transform: scale(0.8);
+            transition: all var(--transition-speed-medium) var(--transition-func);
+            margin-left: auto;
+            border-radius: 50%; /* Circular */
+        }
+        .remove-btn svg {
+            width: 0.9em;
+            height: 0.9em;
+            fill: currentColor;
+            transition: fill var(--transition-speed-fast);
+        }
+        .task-item:hover .remove-btn,
+        .task-item:focus-within .remove-btn, /* Show on focus within item */
+        .remove-btn:focus-visible {
+            opacity: 0.7;
+            transform: scale(1);
+            color: var(--danger);
+        }
+        .remove-btn:hover:not(:disabled),
+        .remove-btn:focus-visible:not(:disabled) {
+            opacity: 1;
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+            transform: scale(1.05); /* Slight zoom */
+            box-shadow: var(--shadow-sm);
+        }
+        .remove-btn:focus-visible { /* Custom focus ring */
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px var(--bg-secondary), 0 0 0 5px var(--danger);
+        }
+
+        .filter-buttons button {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-width: 1px;
+            border-color: transparent; /* No border by default */
+            box-shadow: none;
+            color: var(--text-secondary);
+            transition: background-color var(--transition-speed-fast),
+                        border-color var(--transition-speed-fast),
+                        color var(--transition-speed-fast);
+        }
+        .filter-buttons button:hover:not(:disabled) {
+            transform: none; /* Override base button hover */
+            box-shadow: none;
+            background-color: var(--empty-state-bg);
+            color: var(--accent-secondary-hover);
+        }
+        .filter-buttons button[aria-pressed="true"] {
+            background-color: var(--accent-primary-focus-ring); /* Use focus ring color */
+            color: var(--accent-primary-hover);
+            font-weight: 600;
+            border-color: var(--accent-secondary);
+        }
+
+        .clear-completed-btn {
+            font-size: 0.875rem;
+            color: var(--danger);
+            background: none;
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            margin-left: auto; /* Pushes to the right */
+            visibility: hidden; /* Hide completely when not needed */
+            opacity: 0;
+            transition: opacity var(--transition-speed-medium) var(--transition-func),
+                        visibility var(--transition-speed-medium),
+                        color var(--transition-speed-fast);
+            box-shadow: none;
+            font-weight: 500;
+        }
+        .clear-completed-btn.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .clear-completed-btn:hover:not(:disabled),
+        .clear-completed-btn:focus-visible:not(:disabled) {
+            color: var(--danger-hover);
+            text-decoration: underline;
+            transform: none; /* Override base button hover */
+            box-shadow: none;
+        }
+        .clear-completed-btn:focus-visible { /* Custom focus ring */
+            box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--danger);
+            text-decoration: none;
+        }
+
+        /* --- Task Controls --- */
+        .task-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            animation: slideIn 0.3s ease-out;
+            padding: var(--spacing-md) 0;
+            margin-bottom: var(--spacing-md);
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: var(--spacing-md);
         }
-
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-out;
+        .task-count {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            flex-shrink: 0; /* Prevent shrinking */
         }
-
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 400px;
-            z-index: 1001;
-            animation: slideInModal 0.3s ease-out;
-        }
-
-        .modal h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        .modal input,
-        .modal select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-        }
-
-        .modal input:focus,
-        .modal select:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-            background-color: white;
-        }
-
-        .modal label {
-            display: block;
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .modal .input-group {
-            margin-bottom: 20px;
-        }
-
-        .modal-buttons {
+        .filter-buttons {
             display: flex;
-            gap: 10px;
-            justify-content: flex-end;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap; /* Allow button wrapping */
+            justify-content: center; /* Center buttons when wrapped */
         }
 
-        .modal-button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+        /* --- Task List & Items --- */
+        .task-list {
+            list-style: none;
+            min-height: 60px; /* Prevent collapsing when empty */
+            flex-grow: 1; /* Take available space */
+            overflow-y: auto; /* Scroll if needed */
+            margin: 0;
+            padding: var(--spacing-xs) 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+        .task-list::-webkit-scrollbar { width: 8px; }
+        .task-list::-webkit-scrollbar-track { background: transparent; }
+        .task-list::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 10px;
+            border: 2px solid transparent; /* Track color */
+            background-clip: content-box;
         }
 
-        .modal-button.cancel {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .modal-button.save {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .modal-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInModal {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -40%);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .task-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .task-item.high-priority {
-            border-left: 4px solid #e74c3c;
-        }
-
-        .task-item.medium-priority {
-            border-left: 4px solid #f1c40f;
-        }
-
-        .task-item.low-priority {
-            border-left: 4px solid #2ecc71;
-        }
-
-        .task-item.completed {
-            background: #f8f9fa;
-            opacity: 0.8;
-        }
-
-        .task-item.completed span {
-            text-decoration: line-through;
-            color: #95a5a6;
-        }
-
-        .task-item button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            margin-left: 8px;
-        }
-
-        .task-item button:first-of-type {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .task-item button:last-of-type {
-            background: #3498db;
-            color: white;
-        }
-
-        .task-item button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .clear-tasks-button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .clear-tasks-button:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
-        }
-
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .toast {
-            background: white;
-            color: #2c3e50;
-            padding: 12px 24px;
-            border-radius: 8px;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        .task-item {
             display: flex;
             align-items: center;
-            animation: slideInRight 0.3s ease-out;
+            padding: var(--spacing-sm) var(--spacing-md);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border-width: 1px;
+            border-radius: var(--border-radius-md);
+            background-color: var(--bg-secondary);
+            transition: transform var(--transition-speed-fast) var(--transition-func),
+                        box-shadow var(--transition-speed-fast) var(--transition-func),
+                        background-color var(--transition-speed-fast) var(--transition-func),
+                        border-color var(--transition-speed-fast) var(--transition-func),
+                        opacity var(--transition-speed-medium) var(--transition-func);
+            box-shadow: var(--shadow-sm);
+            position: relative; /* For absolute positioning if needed */
+            overflow-wrap: break-word; /* Prevent long words overflowing */
+            overflow: hidden; /* Needed for animations */
+        }
+        .task-item:not(.editing):hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
-        @keyframes slideInRight {
+        .task-text {
+            flex-grow: 1;
+            cursor: pointer; /* Indicate interactivity */
+            line-height: 1.5;
+            transition: color var(--transition-speed-medium) var(--transition-func),
+                        text-decoration-color var(--transition-speed-medium) var(--transition-func),
+                        text-decoration var(--transition-speed-fast),
+                        opacity var(--transition-speed-medium) var(--transition-func);
+            padding: var(--spacing-xs) 0; /* Vertical padding for click target */
+            min-height: 1.5em; /* Ensure consistent height */
+            text-decoration: underline solid transparent 1px; /* Underline on hover setup */
+            text-decoration-color: transparent;
+            text-underline-offset: 3px;
+        }
+        .task-item:not(.editing) .task-text:hover {
+            text-decoration-color: var(--accent-primary);
+        }
+
+        /* --- Checkbox --- */
+        .task-checkbox {
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none; /* Custom styling */
+            background-color: var(--checkbox-bg);
+            margin: 0;
+            font: inherit;
+            width: 1.25em;
+            height: 1.25em;
+            border: 1.5px solid var(--checkbox-border);
+            border-radius: var(--border-radius-sm);
+            transform: translateY(-0.075em); /* Align better with text */
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: border-color var(--transition-speed-fast),
+                        background-color var(--transition-speed-fast),
+                        opacity var(--transition-speed-fast);
+            box-shadow: none;
+        }
+        .task-checkbox::before { /* Checkmark */
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: transform var(--transition-speed-fast) var(--transition-func);
+            box-shadow: inset 1em 1em var(--checkbox-checkmark);
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .task-checkbox:checked {
+            background-color: var(--checkbox-checked-bg);
+            border-color: var(--checkbox-checked-border);
+        }
+        .task-checkbox:checked::before {
+            transform: scale(1);
+        }
+        .task-checkbox:hover {
+            border-color: var(--accent-primary);
+        }
+
+        /* --- Completed State --- */
+        .task-item.completed {
+            background-color: var(--empty-state-bg);
+            opacity: 0.75;
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through solid var(--completed-text) 1.5px;
+            color: var(--completed-text);
+            opacity: 1; /* Override potential parent opacity */
+        }
+        .task-item.completed .task-text:hover {
+            text-decoration-color: var(--completed-text); /* Keep strikethrough color */
+        }
+        .task-item.completed .task-checkbox {
+            border-color: var(--checkbox-border-completed);
+        }
+        .task-item.completed .task-checkbox:checked {
+            border-color: var(--accent-primary); /* Keep accent border when checked */
+            opacity: 0.8; /* Slightly dimmer */
+        }
+
+        /* --- Editing State --- */
+        .task-item.editing {
+            border-color: var(--accent-primary);
+            background-color: var(--empty-state-bg);
+            box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--accent-primary);
+            z-index: 1; /* Bring to front */
+        }
+        .task-item.editing .task-checkbox,
+        .task-item.editing .remove-btn {
+            opacity: 0.4;
+            pointer-events: none; /* Disable interactions */
+        }
+        /* Adjust completed style when editing */
+        .task-item.editing.completed {
+            opacity: 1; /* Make fully visible */
+        }
+        .task-item.editing.completed .task-text {
+            text-decoration: none; /* Remove strikethrough */
+            color: var(--text-primary); /* Use normal text color */
+        }
+
+        /* --- Empty State --- */
+        .task-list:empty::after {
+            content: '🎉 All clear! Congrats 🎉';
+            display: block;
+            text-align: center;
+            color: var(--text-secondary);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            background-color: var(--empty-state-bg);
+            border-radius: var(--border-radius-md);
+            margin-top: var(--spacing-lg);
+            border-width: 2px;
+            border-style: dashed;
+            border-color: var(--empty-state-border);
+            font-style: italic;
+            font-size: 1.05rem;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeOutCollapse {
             from {
-                transform: translateX(100%);
-                opacity: 0;
+                opacity: 1;
+                max-height: 100px; /* Estimate */
+                padding-top: var(--spacing-sm);
+                padding-bottom: var(--spacing-sm);
+                margin-bottom: var(--spacing-sm);
+                border-width: 1px;
+                transform: scaleY(1);
             }
             to {
-                transform: translateX(0);
-                opacity: 1;
+                opacity: 0;
+                max-height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                margin-bottom: 0;
+                border-width: 0;
+                transform: scaleY(0.8);
             }
         }
 
-        .toast.success {
-            border-left: 4px solid #2ecc71;
+        .task-item.adding {
+            animation: fadeInDown var(--transition-speed-slow) var(--transition-func) forwards;
+        }
+        .task-item.removing {
+            animation: fadeOutCollapse var(--transition-speed-medium) var(--transition-func) forwards;
+            transition: none !important; /* Prevent conflicts with other transitions */
         }
 
-        .toast.error {
-            border-left: 4px solid #e74c3c;
+        /* --- Theme Toggle Button --- */
+        #theme-toggle {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            z-index: 100;
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: 50%;
+            background-color: var(--toggle-bg);
+            color: var(--toggle-fg);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            border-width: 1px;
+            transition: background-color var(--transition-speed-fast),
+                        color var(--transition-speed-fast),
+                        transform var(--transition-speed-fast);
         }
+        #theme-toggle:hover:not(:disabled) {
+            background-color: var(--toggle-hover-bg);
+            transform: scale(1.1) translateY(-2px); /* Pop effect */
+            box-shadow: var(--shadow-lg);
+        }
+        #theme-toggle svg {
+            width: 1.8rem;
+            height: 1.8rem;
+            fill: currentColor;
+            transition: transform var(--transition-speed-fast);
+        }
+        #theme-toggle:focus-visible { /* Custom focus */
+            box-shadow: 0 0 0 3px var(--bg-primary), 0 0 0 5px var(--accent-primary);
+        }
+        .sun-icon, .moon-icon {
+            transition: opacity var(--transition-speed-fast);
+        }
+        html.dark-theme .sun-icon { display: none; }
+        html:not(.dark-theme) .moon-icon { display: none; }
 
-        @media (max-width: 480px) {
-            .input-wrapper {
+
+        /* --- Toastify Customization --- */
+        .toastify {
+            padding: 10px 16px;
+            color: var(--toast-info-text); /* Default */
+            display: inline-block;
+            box-shadow: var(--shadow-md);
+            background: var(--toast-info-bg); /* Default */
+            position: fixed;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+            border-radius: var(--border-radius-md);
+            text-decoration: none;
+            max-width: calc(100% - 40px); /* Prevent touching edges */
+            z-index: 2000;
+            font-weight: 500;
+            margin-bottom: var(--spacing-md);
+            margin-left: var(--spacing-md);
+            line-height: 1.4;
+            border-left: 4px solid var(--toast-info-text); /* Default border */
+        }
+        .toastify.on-left { left: 0; }
+        .toastify.on-bottom { bottom: 0; }
+
+        .toastify.toastify-success {
+             background: var(--toast-success-bg);
+             color: var(--toast-success-text);
+             border-left-color: var(--toast-success-text);
+        }
+        .toastify.toastify-error {
+             background: var(--toast-error-bg);
+             color: var(--toast-error-text);
+             border-left-color: var(--toast-error-text);
+        }
+        .toastify.toastify-info {
+             background: var(--toast-info-bg);
+             color: var(--toast-info-text);
+             border-left-color: var(--toast-info-text);
+        }
+        .toastify.toastify-edit { /* Custom type */
+             background: var(--toast-edit-bg);
+             color: var(--toast-edit-text);
+             border-left-color: var(--toast-edit-text);
+        }
+        /* Note: Close button styles removed as close: false is used in JS */
+
+        /* --- Responsive Styles --- */
+        @media (max-width: 640px) {
+            body {
+                padding: var(--spacing-md);
+            }
+            .container {
+                padding: var(--spacing-lg);
+                border-radius: var(--border-radius-md);
+                margin-top: var(--spacing-sm);
+                max-width: 100%;
+            }
+            h1 {
+                font-size: 1.75rem;
+            }
+            .add-task-form {
                 flex-direction: column;
+                gap: var(--spacing-md);
             }
-
-            .task-category {
+            .add-btn {
                 width: 100%;
+                padding: 0.75rem var(--spacing-lg);
+                font-size: 1rem;
             }
-
-            .add-task-button {
-                width: 100%;
+            .task-controls {
+                 flex-direction: column;
+                 align-items: stretch; /* Make items full width */
+                 gap: var(--spacing-md);
             }
-
+            .task-count {
+                 text-align: center;
+                 margin-bottom: var(--spacing-sm);
+            }
+            .filter-buttons {
+                 justify-content: center;
+                 gap: var(--spacing-xs);
+            }
+            .clear-completed-btn {
+                 margin-left: 0; /* Reset margin */
+                 text-align: center;
+                 width: 100%;
+                 margin-top: var(--spacing-sm);
+                 justify-content: center;
+            }
             .task-item {
-                flex-direction: column;
-                gap: 10px;
+                 padding: var(--spacing-sm);
+                 gap: var(--spacing-sm);
+            }
+            .task-text {
+                 line-height: 1.4;
+            }
+            .remove-btn {
+                 width: 1.75rem;
+                 height: 1.75rem;
+            }
+            .task-item:hover .remove-btn { /* Need higher opacity on mobile */
+                 opacity: 0.8;
+            }
+            .remove-btn svg {
+                 width: 0.8em;
+                 height: 0.8em;
+            }
+            .task-list:empty::after {
+                 padding: var(--spacing-lg);
+                 font-size: 1rem;
+            }
+            #theme-toggle {
+                 bottom: var(--spacing-md);
+                 right: var(--spacing-md);
+                 width: 3rem;
+                 height: 3rem;
+            }
+            #theme-toggle svg {
+                 width: 1.6rem;
+                 height: 1.6rem;
             }
 
-            .task-item div {
-                width: 100%;
-                display: flex;
-                gap: 8px;
+            /* Adjust toast for mobile */
+            .toastify {
+                max-width: calc(100% - 2 * var(--spacing-md));
+                margin-left: var(--spacing-md);
+                margin-right: var(--spacing-md);
+                margin-bottom: var(--spacing-md);
+                width: auto; /* Let content define width */
+                left: var(--spacing-md); /* Adjust position */
+                right: var(--spacing-md);
+                font-size: 0.9rem;
             }
-
-            .task-item button {
-                flex: 1;
-                margin: 0;
-            }
-
-            .modal {
-                width: 95%;
-                padding: 20px;
-            }
+             .toastify.on-left { left: var(--spacing-md); } /* Override default */
         }
+
     </style>
 </head>
 <body>
-    <div class="task-manager-wrapper">
-        <h1>Task Manager</h1>
-        
-        <div class="input-wrapper">
-            <input type="text" id="taskInput" class="new-task-input" placeholder="Add a new task..." aria-label="New task input">
-            <select id="taskCategory" class="task-category" aria-label="Select task priority">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </select>
-            <button class="add-task-button" onclick="createTask()">Add Task</button>
+    <!-- TEMPLATE -->
+    <template id="task-item-template">
+        <li class="task-item" data-task-id="" role="listitem">
+            <input type="checkbox" class="task-checkbox" aria-label="Mark task as complete">
+            <span class="task-text" tabindex="0" role="button" aria-label="Task description, double click or press Enter to edit"></span>
+            <input type="text" class="edit-input sr-only" aria-label="Edit task description">
+            <button type="button" class="remove-btn" aria-label="Remove task">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </li>
+    </template>
+
+    <!-- MAIN APP STRUCTURE -->
+    <main class="container">
+        <h1>My Todos</h1>
+
+        <form class="add-task-form" id="addTaskForm" aria-labelledby="form-heading">
+            <h2 id="form-heading" class="sr-only">Add a new task</h2>
+            <label for="taskInput" class="sr-only">New task description:</label>
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="What needs to be done?"
+                required
+                aria-required="true"
+                aria-describedby="input-hint"
+            >
+            <span id="input-hint" class="sr-only">Enter task and press Enter or click Add.</span>
+            <button type="submit" class="add-btn">Add Task</button>
+        </form>
+
+        <div class="task-controls">
+            <span class="task-count" aria-live="polite"></span>
+            <div class="filter-buttons" role="group" aria-label="Filter tasks">
+                <button type="button" data-filter="all" aria-pressed="true">All</button>
+                <button type="button" data-filter="active" aria-pressed="false">Active</button>
+                <button type="button" data-filter="completed" aria-pressed="false">Completed</button>
+            </div>
+            <button type="button" class="clear-completed-btn">Clear Completed</button>
         </div>
 
-        <ul id="taskList" class="tasks-list"></ul>
-        <button class="clear-tasks-button" onclick="clearTasks()">Clear All Tasks</button>
-    </div>
+        <ul class="task-list" id="taskList" aria-live="polite" aria-relevant="additions removals"></ul>
 
-    <!-- Custom Modal for Editing -->
-    <div id="editModal" class="modal-overlay">
-        <div class="modal">
-            <h2>Edit Task</h2>
-            <div class="input-group">
-                <label for="editTaskInput">Task Description</label>
-                <input type="text" id="editTaskInput" placeholder="Edit your task">
-            </div>
-            <div class="input-group">
-                <label for="editTaskPriority">Priority Level</label>
-                <select id="editTaskPriority" class="task-category">
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-button cancel" onclick="closeEditModal()">Cancel</button>
-                <button class="modal-button save" onclick="saveEditedTask()">Save</button>
-            </div>
-        </div>
-    </div>
+    </main>
 
-    <div id="toastContainer" class="toast-container"></div>
+    <!-- THEME TOGGLE -->
+    <button id="theme-toggle" aria-label="Toggle light/dark theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V18.75a.75.75 0 01.75-.75zM5.166 17.834a.75.75 0 00-1.06 1.06l1.59 1.591a.75.75 0 001.061-1.06l-1.59-1.591zM6.75 12a.75.75 0 01-.75.75H3.75a.75.75 0 010-1.5h2.25A.75.75 0 016.75 12zM6.166 5.106a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.061L6.166 5.106z"/>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+             <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.51 1.713-6.622 4.43-8.564a.75.75 0 01.819.162z" clip-rule="evenodd" />
+        </svg>
+    </button>
 
+    <!-- EXTERNAL SCRIPTS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- APP SCRIPT -->
     <script>
-        let currentEditingTask = null;
+    (function() { // IIFE Start - Encapsulate script to avoid global scope pollution
+        'use strict';
 
-        function showEditModal(taskElement, currentText) {
-            const modal = document.getElementById('editModal');
-            const input = document.getElementById('editTaskInput');
-            const prioritySelect = document.getElementById('editTaskPriority');
-            
-            // Get current priority
-            const currentPriority = taskElement.className.split(' ')
-                .find(cls => cls.includes('-priority'))
-                ?.replace('-priority', '') || 'low';
-            
-            currentEditingTask = taskElement;
-            input.value = currentText;
-            prioritySelect.value = currentPriority;
-            
-            modal.style.display = 'block';
-            input.focus();
+        // --- DOM Elements ---
+        const taskForm = document.getElementById('addTaskForm');
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+        const taskItemTemplate = document.getElementById('task-item-template');
+        const taskControls = document.querySelector('.task-controls');
+        const taskCountElement = taskControls.querySelector('.task-count');
+        const filterButtonsContainer = taskControls.querySelector('.filter-buttons');
+        const filterButtons = filterButtonsContainer.querySelectorAll('button');
+        const clearCompletedBtn = taskControls.querySelector('.clear-completed-btn');
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement; // Cache html element
 
-            // Close modal when clicking outside
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeEditModal();
-                }
-            });
+        // --- Constants ---
+        const STORAGE_KEY = 'todoAppEnhancedTasks';
+        const THEME_STORAGE_KEY = 'todoAppThemePreference';
+        const CssClasses = {
+            COMPLETED: 'completed',
+            EDITING: 'editing',
+            ADDING: 'adding',
+            REMOVING: 'removing',
+            SR_ONLY: 'sr-only',
+            DARK_THEME: 'dark-theme',
+            VISIBLE: 'visible'
+        };
+        const Filters = {
+            ALL: 'all',
+            ACTIVE: 'active',
+            COMPLETED: 'completed'
+        };
+        const Themes = {
+            LIGHT: 'light',
+            DARK: 'dark'
+        };
+        const ANIMATION_DURATION_MEDIUM = 250; // Match CSS var --transition-speed-medium
 
-            // Handle Enter key
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    saveEditedTask();
-                }
-            });
-        }
+        // --- State Variables ---
+        let tasks = [];
+        let currentFilter = Filters.ALL;
+        let currentlyEditing = null; // Holds the ID of the task being edited
+        let currentTheme = Themes.LIGHT; // Set during initialization
 
-        function closeEditModal() {
-            const modal = document.getElementById('editModal');
-            modal.style.display = 'none';
-            currentEditingTask = null;
-        }
+        // --- Utility Functions ---
+        const generateId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 
-        function saveEditedTask() {
-            const input = document.getElementById('editTaskInput');
-            const prioritySelect = document.getElementById('editTaskPriority');
-            const newText = input.value.trim();
-            const newPriority = prioritySelect.value;
-            
-            if (newText && currentEditingTask) {
-                const taskTextSpan = currentEditingTask.querySelector('span');
-                taskTextSpan.textContent = newText;
-                
-                // Update priority class
-                currentEditingTask.classList.remove('low-priority', 'medium-priority', 'high-priority');
-                currentEditingTask.classList.add(`${newPriority}-priority`);
-                
-                showToast("Task updated!", 'success');
-                closeEditModal();
+        // --- Local Storage ---
+        const saveToLocalStorage = (key, data) => {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (error) {
+                console.error(`Error saving ${key}:`, error);
+                // Optionally show a user-facing error, but avoid spamming
             }
-        }
+        };
 
-        function showToast(message, type = 'success') {
-            const toastContainer = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.classList.add('toast', type);
-            toast.textContent = message;
-            toastContainer.appendChild(toast);
+        const loadFromLocalStorage = (key, defaultValue) => {
+            try {
+                const storedValue = localStorage.getItem(key);
+                if (storedValue) {
+                    // Basic validation could be added here if needed
+                    return JSON.parse(storedValue);
+                }
+            } catch (error) {
+                console.error(`Error loading ${key}:`, error);
+                localStorage.removeItem(key); // Clear potentially corrupted data
+            }
+            return defaultValue;
+        };
 
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+        const saveTasks = () => saveToLocalStorage(STORAGE_KEY, tasks);
+        const loadTasks = () => {
+            const loaded = loadFromLocalStorage(STORAGE_KEY, []);
+            // Add validation step if needed (e.g., check array structure)
+            if (Array.isArray(loaded) && loaded.every(t => typeof t?.id === 'string' && typeof t?.text === 'string' && typeof t?.completed === 'boolean')) {
+                return loaded;
+            } else if (loaded.length > 0) { // Only show warning if there was *something* invalid
+                console.warn("Stored tasks data malformed. Resetting.");
+                showToast("⚠️ Stored data invalid. Resetting list.", 'error', 5000);
+                localStorage.removeItem(STORAGE_KEY); // Clear invalid data
+            }
+            return []; // Return default empty array
+        };
 
-        function createTask() {
-            const taskInput = document.getElementById('taskInput');
-            const taskCategory = document.getElementById('taskCategory').value;
-            const taskText = taskInput.value.trim();
-
-            if (!taskText) return;
-
-            const taskElement = document.createElement('li');
-            taskElement.classList.add('task-item', `${taskCategory}-priority`);
-
-            const taskTextSpan = document.createElement('span');
-            taskTextSpan.textContent = taskText;
-            taskElement.appendChild(taskTextSpan);
-
-            taskElement.addEventListener('click', () => {
-                taskElement.classList.toggle('completed');
-                showToast(taskElement.classList.contains('completed') ? 
-                    "Task completed!" : "Task uncompleted", 'success');
-            });
-
-            const buttonContainer = document.createElement('div');
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                taskElement.style.opacity = '0';
-                taskElement.style.transform = 'translateX(20px)';
-                setTimeout(() => {
-                    taskElement.remove();
-                    showToast("Task deleted!", 'error');
-                }, 300);
-            };
-
-            const editBtn = document.createElement('button');
-            editBtn.textContent = 'Edit';
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                showEditModal(taskElement, taskTextSpan.textContent);
-            };
-
-            buttonContainer.appendChild(deleteBtn);
-            buttonContainer.appendChild(editBtn);
-            taskElement.appendChild(buttonContainer);
-
-            document.getElementById('taskList').appendChild(taskElement);
-            taskInput.value = '';
-            taskInput.focus();
-
-            showToast("Task added successfully!", 'success');
-        }
-
-        function clearTasks() {
-            const taskList = document.getElementById('taskList');
-            if (taskList.children.length === 0) {
-                showToast("No tasks to clear!", 'error');
+        // --- Toast Notifications ---
+        function showToast(text, type = 'info', duration = 3000) {
+            if (typeof Toastify !== 'function') {
+                console.warn('Toastify library not loaded.');
                 return;
             }
-            taskList.innerHTML = '';
-            showToast("All tasks cleared!", 'error');
+            let className = `toastify-${type}`;
+             // Map custom types if needed
+            if (type === 'edit') className = 'toastify-edit';
+
+            Toastify({
+                text: text,
+                duration: duration,
+                close: false, // No close 'X' button
+                gravity: "bottom",
+                position: "left",
+                stopOnFocus: true, // Prevents dismissing on hover
+                className: `${className} on-left on-bottom`, // Ensure mobile positioning classes
+            }).showToast();
         }
 
-        document.getElementById('taskInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') createTask();
-        });
+        // --- Confetti Effects ---
+        function triggerConfetti(options = {}) {
+            if (typeof confetti !== 'function') {
+                console.warn('Confetti library not loaded.');
+                return;
+            }
+            const defaults = { particleCount: 100, spread: 70, origin: { y: 0.6 } };
+            confetti({ ...defaults, ...options });
+        }
+
+        function triggerConfettiFromElement(element) {
+             if (typeof confetti !== 'function' || !element) return;
+            const rect = element.getBoundingClientRect();
+            const origin = {
+                x: (rect.left + rect.width / 2) / window.innerWidth,
+                y: (rect.top + rect.height / 2) / window.innerHeight
+            };
+            triggerConfetti({ origin: origin, particleCount: 60, spread: 50, angle: 90, scalar: 0.8 });
+        }
+
+
+        // --- Theme Management ---
+        function applyTheme(theme) {
+            const isDark = theme === Themes.DARK;
+            htmlElement.classList.toggle(CssClasses.DARK_THEME, isDark);
+            themeToggleButton.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+            currentTheme = theme;
+            saveToLocalStorage(THEME_STORAGE_KEY, theme);
+        }
+
+        function toggleTheme() {
+            applyTheme(currentTheme === Themes.LIGHT ? Themes.DARK : Themes.LIGHT);
+        }
+
+        function loadInitialTheme() {
+            let preferredTheme = loadFromLocalStorage(THEME_STORAGE_KEY, null);
+            if (!preferredTheme || (preferredTheme !== Themes.LIGHT && preferredTheme !== Themes.DARK)) {
+                // If no valid theme saved, check system preference
+                preferredTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    ? Themes.DARK
+                    : Themes.LIGHT;
+            }
+            applyTheme(preferredTheme);
+        }
+
+        // --- Task Element Creation ---
+        function createTaskElement(task) {
+            const templateClone = taskItemTemplate.content.cloneNode(true);
+            const li = templateClone.querySelector('.task-item');
+            const checkbox = templateClone.querySelector('.task-checkbox');
+            const span = templateClone.querySelector('.task-text');
+            const editInput = templateClone.querySelector('.edit-input');
+            const removeBtn = templateClone.querySelector('.remove-btn');
+
+            li.dataset.taskId = task.id;
+            li.classList.toggle(CssClasses.COMPLETED, task.completed);
+            // li.setAttribute('role', 'listitem'); // Role already in template
+
+            checkbox.checked = task.completed;
+            checkbox.setAttribute('aria-label', `Mark task "${task.text}" as ${task.completed ? 'incomplete' : 'complete'}`);
+
+            span.textContent = task.text;
+            span.setAttribute('aria-label', `Task: ${task.text}. Double click or press Enter to edit`);
+
+            editInput.value = task.text;
+            editInput.setAttribute('aria-label', `Edit task: ${task.text}`);
+
+            removeBtn.setAttribute('aria-label', `Remove task "${task.text}"`);
+
+            return li;
+        }
+
+        // --- Rendering & UI Updates ---
+        function renderTasks() {
+            // Clear only task items, preserving potential other elements if added later
+            Array.from(taskList.children).forEach(child => {
+                if (child.matches('.task-item')) {
+                    child.remove();
+                }
+            });
+
+            const fragment = document.createDocumentFragment();
+            getFilteredTasks().forEach(task => {
+                fragment.appendChild(createTaskElement(task));
+            });
+
+            taskList.appendChild(fragment);
+            updateControlsVisibility();
+        }
+
+        function getFilteredTasks() {
+            switch (currentFilter) {
+                case Filters.ACTIVE: return tasks.filter(task => !task.completed);
+                case Filters.COMPLETED: return tasks.filter(task => task.completed);
+                case Filters.ALL:
+                default: return [...tasks]; // Return a copy
+            }
+        }
+
+        function updateControlsVisibility() {
+            const activeTasksCount = tasks.filter(task => !task.completed).length;
+            const completedTasksCount = tasks.length - activeTasksCount;
+
+            taskCountElement.textContent = `${activeTasksCount} item${activeTasksCount !== 1 ? 's' : ''} left`;
+
+            clearCompletedBtn.classList.toggle(CssClasses.VISIBLE, completedTasksCount > 0);
+            clearCompletedBtn.disabled = completedTasksCount === 0;
+
+            filterButtons.forEach(button => {
+                button.setAttribute('aria-pressed', button.dataset.filter === currentFilter);
+            });
+
+            // If editing, ensure the task being edited is still visible under the current filter
+            if (currentlyEditing) {
+                const editedTask = tasks.find(t => t.id === currentlyEditing);
+                if (!editedTask) {
+                    cancelEdit(currentlyEditing); // Task was deleted elsewhere
+                    return;
+                }
+                const isVisible = (currentFilter === Filters.ALL ||
+                                  (currentFilter === Filters.ACTIVE && !editedTask.completed) ||
+                                  (currentFilter === Filters.COMPLETED && editedTask.completed));
+                if (!isVisible) {
+                    cancelEdit(currentlyEditing); // Cancel edit if filter hides it
+                }
+            }
+        }
+
+        // --- Task Manipulation ---
+        function addTask(text) {
+            const trimmedText = text.trim();
+            if (!trimmedText) {
+                showToast("⚠️ Please enter a task.", 'error');
+                taskInput.focus();
+                return;
+            }
+
+            const newTask = { id: generateId(), text: trimmedText, completed: false };
+            tasks.unshift(newTask); // Add to the beginning
+            saveTasks();
+            showToast('✅ Task added!', 'success');
+
+            // Only add visually if it matches the current filter
+            if (currentFilter !== Filters.COMPLETED) {
+                const taskElement = createTaskElement(newTask);
+                taskList.prepend(taskElement);
+                // Animate addition
+                requestAnimationFrame(() => {
+                    taskElement.classList.add(CssClasses.ADDING);
+                    taskElement.addEventListener('animationend', () => {
+                        taskElement.classList.remove(CssClasses.ADDING);
+                    }, { once: true });
+                });
+            }
+
+            updateControlsVisibility();
+            taskInput.value = ''; // Clear input field
+        }
+
+        function removeTask(id) {
+            const taskIndex = tasks.findIndex(task => task.id === id);
+            if (taskIndex === -1) return; // Task not found
+
+            const taskText = tasks[taskIndex].text; // Get text before removing
+
+            // If currently editing this task, cancel the edit first
+            if (id === currentlyEditing) {
+                cancelEdit(id);
+            }
+
+            tasks.splice(taskIndex, 1);
+            saveTasks();
+            updateControlsVisibility();
+            showToast(`🗑️ Task removed.`, 'error'); // Use error type for removal visual
+
+            // Animate removal
+            const taskElement = taskList.querySelector(`.task-item[data-task-id="${id}"]`);
+            if (taskElement) {
+                taskElement.classList.add(CssClasses.REMOVING);
+                taskElement.setAttribute('aria-hidden', 'true');
+                taskElement.addEventListener('animationend', () => {
+                    taskElement.remove();
+                }, { once: true });
+            }
+        }
+
+        function toggleTaskComplete(id) {
+            // Prevent toggling while editing the same task
+            if (id === currentlyEditing) return;
+
+            let taskToUpdate = null;
+            let wasCompleted;
+
+            tasks = tasks.map(task => {
+                if (task.id === id) {
+                    wasCompleted = task.completed;
+                    taskToUpdate = { ...task, completed: !task.completed };
+                    return taskToUpdate;
+                }
+                return task;
+            });
+
+            if (!taskToUpdate) return; // Task not found
+
+            saveTasks();
+
+            // Show feedback & potentially confetti
+            const taskElement = taskList.querySelector(`.task-item[data-task-id="${id}"]`);
+            if (taskToUpdate.completed) {
+                showToast(`🎉 Task completed!`, 'success');
+                if(taskElement) {
+                    triggerConfettiFromElement(taskElement.querySelector('.task-checkbox'));
+                }
+            } else {
+                showToast(`🔄 Task marked active.`, 'info');
+            }
+
+            // Update UI based on filter
+            if (taskElement) {
+                const shouldBeVisibleNow = (currentFilter === Filters.ALL) ||
+                                           (currentFilter === Filters.ACTIVE && !taskToUpdate.completed) ||
+                                           (currentFilter === Filters.COMPLETED && taskToUpdate.completed);
+
+                if (shouldBeVisibleNow) {
+                    // Update existing element
+                    taskElement.classList.toggle(CssClasses.COMPLETED, taskToUpdate.completed);
+                    const checkbox = taskElement.querySelector('.task-checkbox');
+                    const span = taskElement.querySelector('.task-text');
+                    const removeBtn = taskElement.querySelector('.remove-btn');
+
+                    if (checkbox) {
+                        checkbox.checked = taskToUpdate.completed;
+                        checkbox.setAttribute('aria-label', `Mark task "${taskToUpdate.text}" as ${taskToUpdate.completed ? 'incomplete' : 'complete'}`);
+                    }
+                     // Update other aria-labels if text could have changed (though not in this function)
+                    if (span) span.setAttribute('aria-label', `Task: ${taskToUpdate.text}. Double click or press Enter to edit`);
+                    if (removeBtn) removeBtn.setAttribute('aria-label', `Remove task "${taskToUpdate.text}"`);
+
+                } else {
+                    // Filter changed visibility, animate removal
+                    taskElement.classList.add(CssClasses.REMOVING);
+                    taskElement.setAttribute('aria-hidden', 'true');
+                    taskElement.addEventListener('animationend', () => {
+                        taskElement.remove();
+                         // Important: Update controls *after* animation potentially removes the last item of a type
+                        updateControlsVisibility();
+                    }, { once: true });
+                    // Defer control update until after animation if removing
+                    return; // Don't call updateControlsVisibility yet
+                }
+            }
+            updateControlsVisibility();
+        }
+
+        function clearCompletedTasks() {
+            const completedTasks = tasks.filter(task => task.completed);
+            if (completedTasks.length === 0) return;
+
+            const completedTaskIds = completedTasks.map(task => task.id);
+            const numCleared = completedTaskIds.length;
+
+            tasks = tasks.filter(task => !task.completed);
+            saveTasks();
+
+            // Cancel edit if any cleared task was being edited
+            completedTaskIds.forEach(id => {
+                if(id === currentlyEditing) {
+                    cancelEdit(id);
+                }
+            });
+
+            updateControlsVisibility();
+            showToast(`🗑️ Cleared ${numCleared} completed task${numCleared > 1 ? 's' : ''}.`, 'error');
+
+            // Confetti if list becomes empty
+            if (tasks.length === 0 && numCleared > 0) {
+                triggerConfetti({ particleCount: 150, spread: 90, origin: { y: 0.4 }});
+            }
+
+            // Animate removal for each cleared task
+            completedTaskIds.forEach(id => {
+                const taskElement = taskList.querySelector(`.task-item[data-task-id="${id}"]`);
+                if (taskElement) {
+                    taskElement.classList.add(CssClasses.REMOVING);
+                    taskElement.setAttribute('aria-hidden', 'true');
+                    taskElement.addEventListener('animationend', () => taskElement.remove(), { once: true });
+                }
+            });
+        }
+
+        // --- Editing Logic ---
+        function startEdit(id) {
+            // If already editing another task, save it first
+            if (currentlyEditing && currentlyEditing !== id) {
+                saveEdit(currentlyEditing); // Attempt to save the previous one
+            }
+            // If still editing (save failed or same ID clicked again), do nothing
+            if (currentlyEditing === id) return;
+
+            const taskElement = taskList.querySelector(`.task-item[data-task-id="${id}"]`);
+            const task = tasks.find(t => t.id === id);
+
+            if (!taskElement || !task || taskElement.classList.contains(CssClasses.EDITING)) return;
+
+            currentlyEditing = id;
+            taskElement.classList.add(CssClasses.EDITING);
+
+            const span = taskElement.querySelector('.task-text');
+            const editInput = taskElement.querySelector('.edit-input');
+            if (!span || !editInput) {
+                console.error("Missing elements for edit:", id);
+                cancelEdit(id, taskElement); // Clean up
+                return;
+            }
+
+            // Switch visibility
+            span.classList.add(CssClasses.SR_ONLY);
+            span.setAttribute('aria-hidden', 'true');
+            editInput.classList.remove(CssClasses.SR_ONLY);
+            editInput.removeAttribute('aria-hidden');
+
+            // Set value and focus
+            editInput.value = task.text; // Ensure it has the latest text
+            editInput.focus();
+            editInput.select(); // Select text for easy replacement
+
+            // Add temporary event listeners
+            editInput.addEventListener('blur', handleEditBlur, { once: true });
+            editInput.addEventListener('keydown', handleEditKeyDown);
+        }
+
+        function saveEdit(id, taskElement = null) {
+            // Only proceed if this task is the one currently being edited
+            if (currentlyEditing !== id) return;
+
+            if (!taskElement) {
+                taskElement = taskList.querySelector(`.task-item[data-task-id="${id}"]`);
+            }
+            // Ensure element exists and is actually in editing state
+            if (!taskElement || !taskElement.classList.contains(CssClasses.EDITING)) {
+                 // If we thought we were editing this ID, but the element isn't, reset state.
+                if (currentlyEditing === id) {
+                    currentlyEditing = null;
+                    const strayInput = taskElement?.querySelector('.edit-input');
+                    if (strayInput) removeEditListeners(strayInput); // Clean up listeners just in case
+                }
+                return;
+            }
+
+            const editInput = taskElement.querySelector('.edit-input');
+            const span = taskElement.querySelector('.task-text');
+            if (!editInput || !span) {
+                console.error("Missing elements during save:", id);
+                cancelEdit(id, taskElement); // Attempt to revert visuals
+                return;
+            }
+
+            const newText = editInput.value.trim();
+            const originalTask = tasks.find(t => t.id === id);
+
+            removeEditListeners(editInput); // Remove listeners regardless of outcome
+
+            // Handle empty input - remove task
+            if (!newText) {
+                showToast(`🗑️ Task removed (empty).`, 'error');
+                removeTask(id); // This will handle UI removal and state update
+                // currentlyEditing is reset inside removeTask if needed
+                return; // Exit saveEdit
+            }
+
+            // Handle no change
+            if (!originalTask || newText === originalTask.text) {
+                cancelEdit(id, taskElement); // Revert visuals, no state change needed
+                return; // Exit saveEdit
+            }
+
+            // Update task in state
+            showToast(`✏️ Task updated!`, 'edit');
+            tasks = tasks.map(task => (task.id === id ? { ...task, text: newText } : task));
+            saveTasks();
+
+            // Update UI text and ARIA labels
+            span.textContent = newText;
+            const checkbox = taskElement.querySelector('.task-checkbox');
+            const removeBtn = taskElement.querySelector('.remove-btn');
+            const isCompleted = originalTask.completed; // Use original completed status
+
+            span.setAttribute('aria-label', `Task: ${newText}. Double click or press Enter to edit`);
+            if (checkbox) checkbox.setAttribute('aria-label', `Mark task "${newText}" as ${isCompleted ? 'incomplete' : 'complete'}`);
+            if (removeBtn) removeBtn.setAttribute('aria-label', `Remove task "${newText}"`);
+            editInput.setAttribute('aria-label', `Edit task: ${newText}`); // Update edit input label too
+
+            // Revert visual state
+            exitEditModeVisuals(taskElement, span, editInput);
+            currentlyEditing = null; // Clear editing state *after* all updates
+        }
+
+        function cancelEdit(id, taskElement = null) {
+            // Only proceed if this task is the one currently being edited
+            if (currentlyEditing !== id) return;
+
+             if (!taskElement) {
+                taskElement = taskList.querySelector(`.task-item[data-task-id="${id}"]`);
+            }
+            // If element doesn't exist or isn't editing, just reset state and ensure listeners are gone
+             if (!taskElement || !taskElement.classList.contains(CssClasses.EDITING)) {
+                currentlyEditing = null;
+                const strayInput = taskElement?.querySelector('.edit-input');
+                if (strayInput) removeEditListeners(strayInput);
+                return;
+            }
+
+            const editInput = taskElement.querySelector('.edit-input');
+            const span = taskElement.querySelector('.task-text');
+            if (!editInput || !span) {
+                console.error("Missing elements during cancel:", id);
+                // Still try to clean up visuals and state
+                taskElement.classList.remove(CssClasses.EDITING);
+                currentlyEditing = null;
+                return;
+            }
+
+            const originalTask = tasks.find(t => t.id === id);
+            removeEditListeners(editInput);
+
+            // Revert input value if task still exists
+            if (originalTask) {
+                editInput.value = originalTask.text;
+            } else {
+                console.warn(`Task ${id} not found during cancelEdit.`);
+                // If task doesn't exist, maybe it was deleted - just exit edit mode
+            }
+
+            // Revert visual state
+            exitEditModeVisuals(taskElement, span, editInput);
+            currentlyEditing = null; // Clear editing state
+        }
+
+        function exitEditModeVisuals(taskElement, span, editInput) {
+            taskElement.classList.remove(CssClasses.EDITING);
+            editInput.classList.add(CssClasses.SR_ONLY);
+            editInput.setAttribute('aria-hidden', 'true');
+            span.classList.remove(CssClasses.SR_ONLY);
+            span.removeAttribute('aria-hidden');
+
+            // Attempt to refocus the span for accessibility after edit finishes
+            requestAnimationFrame(() => {
+                 // Check if focus is still somewhere within the task item or on the input itself
+                if (taskElement.contains(document.activeElement) || document.activeElement === editInput) {
+                    span.focus();
+                }
+            });
+        }
+
+        function removeEditListeners(editInput) {
+            if (!editInput) return;
+            editInput.removeEventListener('blur', handleEditBlur);
+            editInput.removeEventListener('keydown', handleEditKeyDown);
+        }
+
+        // --- Event Handlers ---
+        function handleEditBlur(event) {
+            // Use setTimeout to allow click on save/cancel buttons if they were implemented
+            // Also prevents blur saving immediately if focus moves within the component briefly
+            const taskId = currentlyEditing; // Capture ID at the time of blur
+            if (taskId) {
+                // Delay allows other events (like Enter keydown) to potentially process first
+                setTimeout(() => {
+                    // Only save if we are *still* editing the same task
+                    if (currentlyEditing === taskId) {
+                         saveEdit(taskId);
+                    }
+                }, 100); // Small delay
+            }
+        }
+
+        function handleEditKeyDown(event) {
+            const taskId = currentlyEditing;
+            if (!taskId) return; // Should not happen if listener is attached correctly
+
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission if wrapped in one
+                saveEdit(taskId);
+            } else if (event.key === 'Escape') {
+                event.preventDefault(); // Prevent potential browser actions
+                cancelEdit(taskId);
+            }
+        }
+
+        function handleAddTaskSubmit(event) {
+            event.preventDefault();
+            addTask(taskInput.value);
+        }
+
+        function handleTaskListInteraction(event) {
+            const target = event.target;
+            const taskElement = target.closest('.task-item');
+            if (!taskElement) return; // Clicked outside a task item
+
+            const taskId = taskElement.dataset.taskId;
+            if (!taskId) {
+                console.warn("Missing data-task-id on clicked item.");
+                return;
+            }
+
+            const isEditingThis = taskElement.classList.contains(CssClasses.EDITING);
+
+            // Click Events
+            if (event.type === 'click') {
+                const removeButton = target.closest('.remove-btn');
+                const checkbox = target.closest('.task-checkbox');
+
+                if (removeButton && !isEditingThis) {
+                    removeTask(taskId);
+                } else if (checkbox && !isEditingThis) {
+                    toggleTaskComplete(taskId);
+                }
+                // Clicks on the text span itself are handled by dblclick or keydown for editing
+            }
+            // Double Click Event
+            else if (event.type === 'dblclick') {
+                // Start editing only if double-clicking the text span and not already editing
+                if (target.classList.contains('task-text') && !isEditingThis) {
+                    startEdit(taskId);
+                }
+            }
+            // Keyboard Events (delegated from the list)
+            else if (event.type === 'keydown') {
+                // Edit on Enter/Space when focus is on the text span
+                if (target.classList.contains('task-text') && !isEditingThis) {
+                     if (event.key === 'Enter') {
+                        event.preventDefault();
+                        startEdit(taskId);
+                    } else if (event.key === ' ') { // Use space to toggle checkbox via text focus
+                        event.preventDefault();
+                        toggleTaskComplete(taskId);
+                    }
+                }
+                // Delete task if focus is on the list item itself
+                else if (target === taskElement && !isEditingThis) {
+                    if (event.key === 'Delete' || event.key === 'Backspace') {
+                        event.preventDefault();
+                        removeTask(taskId);
+                    }
+                }
+            }
+        }
+
+        function handleFilterClick(event) {
+            const button = event.target.closest('.filter-buttons button');
+            if (!button || button.disabled) return; // Clicked gap or disabled button
+
+            const newFilter = button.dataset.filter;
+            // Validate filter and check if it's actually different
+            if (!newFilter || !Object.values(Filters).includes(newFilter) || newFilter === currentFilter) {
+                return;
+            }
+
+            currentFilter = newFilter;
+            renderTasks(); // Re-render list based on the new filter
+        }
+
+        // --- Initialization ---
+        function initializeApp() {
+            loadInitialTheme();
+            tasks = loadTasks();
+            renderTasks(); // Initial render
+
+            // Attach event listeners
+            taskForm.addEventListener('submit', handleAddTaskSubmit);
+            // Use event delegation on the task list for efficiency
+            taskList.addEventListener('click', handleTaskListInteraction);
+            taskList.addEventListener('dblclick', handleTaskListInteraction);
+            taskList.addEventListener('keydown', handleTaskListInteraction); // For keyboard interactions on items/text
+
+            filterButtonsContainer.addEventListener('click', handleFilterClick);
+            clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+            themeToggleButton.addEventListener('click', toggleTheme);
+
+            showToast("✨ Todo App Ready!", 'info', 2000);
+            console.log("Enhanced Todo App Initialized");
+        }
+
+        // --- Start the App ---
+        // Use DOMContentLoaded to ensure the DOM is ready before interacting with it
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    })(); // IIFE End
     </script>
+
 </body>
 </html>
