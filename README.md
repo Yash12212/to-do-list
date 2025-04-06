@@ -53,7 +53,7 @@ No complex setup needed!
 1.  **Clone or Download:**
     ```bash
     # If you use git
-    git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+    git clone https://github.com/Yash12212/to-do-list.git
     cd YOUR_REPOSITORY_NAME
 
     # Or simply download the index.html file
